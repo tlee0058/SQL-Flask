@@ -1,10 +1,8 @@
 from flask import Flask, render_template, redirect, request, session, flash
 app = Flask(__name__)
 from mysqlconnection import MySQLConnector
-mysql = MySQLConnector(app, 'mydb')
+mysql = MySQLConnector(app, 'validation')
 app.secret_key = "secret"
-
-x = []
 
 @app.route('/')
 def index():
@@ -13,22 +11,22 @@ def index():
 @app.route('/add', methods =['POST'])
 def add():
     
-        email = request.form['email']
-        print email
-        query="INSERT INTO emails (emails, created_at, updated_at) VALUES (:email, NOW(), NOW())"
-        data = {
-            'email' : email,
-        }
-        mysql.query_db(query, data)
-        flash("Email added")
-        return redirect ('/')
+    address = request.form['email']
+    print address
+    query="INSERT INTO emails (address, created_at, updated_at) VALUES (:address, NOW(), NOW())"
+    data = {
+        'address' : address,
+    }
+    mysql.query_db(query, data)
+    flash("Email added")
+    return redirect ('/')
     
 @app.route('/validate', methods =['POST'])
 def validate():
-        session['vemail'] = request.form['vemail']
+        session['email'] = request.form['email']
         
-        query="SELECT * FROM emails WHERE emails = :email LIMIT 1"
-        data = {'email': session['vemail']}        
+        query="SELECT * FROM emails WHERE address = :address LIMIT 1"
+        data = {'address': session['email']}        
         check = mysql.query_db(query, data)
         if len(check) != 0:
             return redirect ('/success')
@@ -44,17 +42,24 @@ def success():
     #     'email' : session['vemail']
     # }
     emails = mysql.query_db("SELECT * FROM emails")
-    session['all_lists'] = x.append(emails)
+    id_query = "SELECT id FROM emails WHERE address = :address"
+    id_data = {
+        'address' : session['email'],
+    }
+    id = mysql.query_db(id_query, id_data)
   
-    return render_template('success.html', emails = session['all_lists'])
+    return render_template('success.html', emails = emails, id = id)
 
-@app.route('/delete/<email_id>')
-def delete(email_id):
-    query="DELETE FROM emails WHERE id = :email_id"
+@app.route('/delete/<id>')
+def delete(id):
+    
+    query="DELETE FROM emails WHERE id = :id"
     data = {
-        'email_id' : email_id,
+        'id' : id,
     }
     mysql.query_db(query, data)
+   
+
 
     return render_template('success.html')
 
