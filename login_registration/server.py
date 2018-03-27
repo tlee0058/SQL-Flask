@@ -73,7 +73,7 @@ def success():
 def login():
     email = request.form['email']
     password = request.form['password']
-    query = "SELECT * FROM users WHERE users.email = :email LIMIT 1" ##
+    query = "SELECT * FROM users WHERE users.email = :email LIMIT 1"
     data = {
         'email' : email,
     }
@@ -83,11 +83,9 @@ def login():
         if encrypted_pw == validate[0]['password']:
             return redirect ('/success')
 
-    else: 
+    else:
         flash("invalid login")
-        return redirect ('/')
-
-
-    
+        return redirect('/')
+        
 
 app.run(debug=True)
