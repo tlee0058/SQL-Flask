@@ -4,7 +4,7 @@ from mysqlconnection import MySQLConnector
 mysql = MySQLConnector(app, 'mydb')
 app.secret_key = "secret"
 
-
+x = []
 
 @app.route('/')
 def index():
@@ -44,9 +44,9 @@ def success():
     #     'email' : session['vemail']
     # }
     emails = mysql.query_db("SELECT * FROM emails")
-    
+    session['all_lists'] = x.append(emails)
   
-    return render_template('success.html', emails = emails)
+    return render_template('success.html', emails = session['all_lists'])
 
 @app.route('/delete/<email_id>')
 def delete(email_id):
