@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>The Wall</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="the_wall/css/style.css") }}">
+</head>
+<body>
+    <div class="container">
+        <span>Coding Dojo Wall</span><span>Welcome {{session['first_name']}}</span><a href="/logout">Logout</a>
+        <p>Post a message</p>
+        <form action="/post_msg", method="post">
+            <textarea name="message" cols="100" rows="5"></textarea>
+            <p><input type="submit" value="Post a message"></p>
+        </form>
+
+        {% for usermessage in usermessages %}
+            <p>{{usermessage['full_name']}} - {{usermessage['messagedate']}}</p>
+            <p>{{usermessage['message']}}</p>
+            <div>
+                <p>Post a comment for this message:</p>
+                {% for commessage in commessages %}
+                    {% if usermessage['id'] == commessage['common_id']%} <!-- line 19 above -->
+                    
+                                <p>{{commessage['full_name']}} - {{commessage['comment_data']}}</p>
+                                <p>{{commessage['comment']}}</p>
+                                <a href="/delete/{{commessage['comment_id']}}">Delete</a>
+                    
+                    {% endif %}
+                {% endfor %}
+                <form action="/post_comm/{{usermessage['id']}}", method="post">
+                    <textarea name="comment" cols="80" rows="3"></textarea>
+                    <p><input type="submit" value="Post a comment"></p>
+                </form>
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</body>
+</html>
